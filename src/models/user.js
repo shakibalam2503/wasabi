@@ -3,13 +3,13 @@ const {Schema}=mongoose;
 const userSchema= new Schema ({
     firstName:{
         type:String,
-        require:true,
+        required:true,
         minLength:3,
         maxLength:20
     },
     lastName:{
         type:String,
-        require:true,
+        required:true,
         minLength:3,
         maxLength:20
     }
@@ -26,7 +26,7 @@ const userSchema= new Schema ({
         type:Number,
         min:6,
         max:80,
-        require:true
+        required:true
     },
     role:{
         type:String,
