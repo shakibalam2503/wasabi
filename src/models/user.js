@@ -35,8 +35,13 @@ const userSchema= new Schema ({
     },
     problemSolved:{
         type:[String]
+    },
+    password:{
+        type:String,
+        required:true,
+        minLength:4,
+        maxLength:20
     }
-    
 },
 {
     timestamps:true
