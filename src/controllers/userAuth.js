@@ -10,20 +10,42 @@ const register = async(req,res)=>{
         
         //hash the password 
 
-        req.body.password =await bcrypt.hash(password,10);
+        req.body.password = await bcrypt.hash(password,10);
 
         
-        await User.create(req.body);
+        const user=await User.create(req.body);
+        
         // creating a jwt token
 
-        const token= jwt.sign({_id:User._id,email:User.email,firstName:User.firstName},process.env.JWT_SECRET_KEY,{expiresIn: 3600});
-        res.cookies("token",token,{maxAge:3600000});
+        const token= jwt.sign({_id:user._id,email:user.email,firstName:user.firstName},process.env.JWT_SECRET_KEY,{expiresIn: 3600});
+        res.cookie("token",token,{maxAge:3600000});
 
         res.status(201).send("User created succefully!!!")
     }
     catch(err){
         res.status(400).send("err:"+err)
     }
-    
-    
+}
+const login= async function(req,res){
+    try{
+        const {email,password}=req.body;
+        if(!email){
+            throw new Error("Missing email");
+        }
+        if(!password){
+            throw new Error("Missing password")
+        }
+        const find = await User.findOne({email});
+        const passwordComapare= await bcrypt.compare(password,find.password);
+
+        if(!find || !passwordComapare){
+            throw new Error("Invalid credential");
+        }
+        const token= jwt.sign({_id:find.id,email:find.email,firstName:find.firstName},process.env.JWT_SECRET_KEY,{expiresIn:3600});
+        res.cookie("token",token,{maxAge:3600*1000});
+        res.status(200).send("log in successfully")
+    }
+    catch(err){
+        res.status(401).send("err:"+err)
+    }
 }
